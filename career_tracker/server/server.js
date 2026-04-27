@@ -6,6 +6,14 @@ const cors = require("cors");
 require("dotenv").config();
 
 const app = express();
+const fs = require("fs");
+const path = require("path");
+
+// Ensure uploads directory exists
+const uploadsDir = path.join(__dirname, "uploads");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir);
+}
 
 // Core routes
 const authRoutes = require("./routes/authRoutes");
@@ -21,14 +29,27 @@ const chatAIRoutes = require("./routes/chatAIRoutes");
 const autoProjectsRoutes = require("./routes/autoProjectsRoutes");
 
 // Middleware
+const allowedOrigins = [
+  "https://notion-app-for-college-students.vercel.app",
+  "https://notion-app-for-colleg-git-3fc5da-medoragomes1402-3897s-projects.vercel.app",
+  "https://notion-app-for-college-students.onrender.com",
+  "http://localhost:5173",
+];
+
 app.use(
   cors({
-    origin: [
-      "https://notion-app-for-colleg-git-3fc5da-medoragomes1402-3897s-projects.vercel.app",
-      "https://notion-app-for-college-students.onrender.com", // Also allow self for internal calls if any
-      "http://localhost:5173", // Local development
-    ],
+    origin: function (origin, callback) {
+      // allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.indexOf(origin) === -1) {
+        const msg = "The CORS policy for this site does not allow access from the specified Origin.";
+        return callback(new Error(msg), false);
+      }
+      return callback(null, true);
+    },
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 app.use(express.json());

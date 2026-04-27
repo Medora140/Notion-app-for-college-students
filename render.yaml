@@ -1,0 +1,33 @@
+services:
+  # Backend service
+  - type: web
+    name: notion-backend
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    rootDir: career_tracker/server
+    envVars:
+      - key: MONGO_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: PORT
+        value: 5000
+      - key: OLLAMA_URL
+        value: http://localhost:11434/api/generate # Default, but likely won't work on free tier
+
+  # Frontend service (Alternative to Vercel, though user requested Vercel)
+  - type: web
+    name: notion-frontend
+    env: static
+    plan: free
+    buildCommand: npm install && npm run build
+    publishDir: career_tracker/client/dist
+    rootDir: career_tracker/client
+    envVars:
+      - key: VITE_API_URL
+        value: https://notion-app-for-college-students.onrender.com/api
+    rewriteRules:
+      - source: /.*
+        destination: /index.html

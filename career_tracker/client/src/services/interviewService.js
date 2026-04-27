@@ -3,7 +3,7 @@ import API from "./api";
 export const getInterviews = async () => {
   const token = localStorage.getItem("token");
 
-  const response = await API.get("/interviews", {
+  const response = await API.get("/api/interviews", {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -15,7 +15,7 @@ export const getInterviews = async () => {
 export const createInterview = async (data) => {
   const token = localStorage.getItem("token");
 
-  const response = await API.post("/interviews", data, {
+  const response = await API.post("/api/interviews", data, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -27,7 +27,7 @@ export const createInterview = async (data) => {
 export const deleteInterview = async (id) => {
   const token = localStorage.getItem("token");
 
-  await API.delete(`/interviews/${id}`, {
+  await API.delete(`/api/interviews/${id}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },

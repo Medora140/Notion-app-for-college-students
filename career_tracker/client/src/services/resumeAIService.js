@@ -1,7 +1,7 @@
-import api from "./api";
+import API from "./api";
 
 export const analyzeResumeAI = async (text, role) => {
-  const res = await api.post("/ai/analyze-ai", {
+  const res = await API.post("/api/ai/analyze-ai", {
     text,
     role,
   });

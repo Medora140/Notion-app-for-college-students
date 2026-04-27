@@ -3,7 +3,7 @@ import API from "./api";
 export const getProblems = async () => {
   const token = localStorage.getItem("token");
 
-  const response = await API.get("/dsa", {
+  const response = await API.get("/api/dsa", {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -15,7 +15,7 @@ export const getProblems = async () => {
 export const createProblem = async (data) => {
   const token = localStorage.getItem("token");
 
-  const response = await API.post("/dsa", data, {
+  const response = await API.post("/api/dsa", data, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -27,7 +27,7 @@ export const createProblem = async (data) => {
 export const deleteProblem = async (id) => {
   const token = localStorage.getItem("token");
 
-  await API.delete(`/dsa/${id}`, {
+  await API.delete(`/api/dsa/${id}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },

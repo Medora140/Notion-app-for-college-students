@@ -3,7 +3,7 @@ import API from "./api";
 export const getApplications = async () => {
   const token = localStorage.getItem("token");
 
-  const response = await API.get("/applications", {
+  const response = await API.get("/api/applications", {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -15,7 +15,7 @@ export const getApplications = async () => {
 export const createApplication = async (data) => {
   const token = localStorage.getItem("token");
 
-  const response = await API.post("/applications", data, {
+  const response = await API.post("/api/applications", data, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -27,7 +27,7 @@ export const createApplication = async (data) => {
 export const deleteApplication = async (id) => {
   const token = localStorage.getItem("token");
 
-  await API.delete(`/applications/${id}`, {
+  await API.delete(`/api/applications/${id}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -37,7 +37,7 @@ export const deleteApplication = async (id) => {
 export const updateApplication = async (id, data) => {
   const token = localStorage.getItem("token");
 
-  const response = await API.put(`/applications/${id}`, data, {
+  const response = await API.put(`/api/applications/${id}`, data, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
