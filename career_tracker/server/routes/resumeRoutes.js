@@ -9,15 +9,12 @@ const {
   deleteResume,
 } = require("../controllers/resumeController");
 
-// Multer config
-const storage = multer.diskStorage({
-  destination: "uploads/",
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + "-" + file.originalname);
-  },
+// Multer config - Use memory storage to get the buffer for parsing
+const storage = multer.memoryStorage();
+const upload = multer({ 
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
 });
-
-const upload = multer({ storage });
 
 router.post("/", auth, upload.single("resume"), uploadResume);
 router.get("/", auth, getResumes);
