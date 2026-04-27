@@ -6,7 +6,7 @@ import {
 } from "../services/resumeService";
 import Avatar from "../components/Avatar";
 
-const BACKEND_URL = import.meta.env.VITE_API_URL || "https://notion-app-for-college-students.onrender.com";
+const BACKEND_URL = (import.meta.env.VITE_API_URL || "https://notion-app-for-college-students.onrender.com").replace(/\/$/, "");
 
 function Resumes() {
   const [resumes, setResumes] = useState([]);
