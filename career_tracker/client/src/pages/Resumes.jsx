@@ -270,8 +270,14 @@ const [loadingProjects, setLoadingProjects] = useState(false);
     if (!file) return;
 
     try {
-      await uploadResume(file);
+      const response = await uploadResume(file);
       toast.success("Resume uploaded successfully!");
+      
+      // Auto-fill the AI text area with extracted text
+      if (response && response.text) {
+        setResumeText(response.text);
+      }
+
       setFile(null);
       e.target.reset(); // Clear the input field UI
       loadResumes();
