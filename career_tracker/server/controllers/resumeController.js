@@ -2,30 +2,7 @@ const Resume = require("../models/Resume");
 const path = require("path");
 const fs = require("fs");
 const mammoth = require("mammoth");
-
-// BULLETPROOF pdf-parse import
-let pdfParse = require("pdf-parse");
-
-if (typeof pdfParse !== "function") {
-  console.log("[DEBUG] pdfParse is not a function initially, searching in properties...");
-  if (pdfParse.default && typeof pdfParse.default === "function") {
-    pdfParse = pdfParse.default;
-  } else if (typeof pdfParse === "object" && pdfParse !== null) {
-    // Find any function property if default fails
-    const funcKey = Object.keys(pdfParse).find(key => typeof pdfParse[key] === "function");
-    if (funcKey) {
-      pdfParse = pdfParse[funcKey];
-    }
-  }
-}
-
-// Final check and dynamic import fallback if still not a function
-if (typeof pdfParse !== "function") {
-  console.log("[DEBUG] require('pdf-parse') failed to yield a function. Attempting dynamic import...");
-  // Note: This will be handled inside the async function to avoid blocking
-}
-
-console.log("[DEBUG] Final pdfParse type:", typeof pdfParse); 
+const pdfParse = require("pdf-parse");
 
 /**
  * Extracts text from various file types using buffers.
@@ -34,17 +11,6 @@ console.log("[DEBUG] Final pdfParse type:", typeof pdfParse);
 const extractTextFromBuffer = async (buffer, originalName, mimetype) => {
   const extension = path.extname(originalName).toLowerCase();
   
-  // Dynamic import fallback if required at runtime
-  if (typeof pdfParse !== "function") {
-    try {
-      const pkg = await import("pdf-parse");
-      pdfParse = pkg.default || pkg;
-      console.log("[DEBUG] Dynamic import of pdf-parse successful. Type:", typeof pdfParse);
-    } catch (err) {
-      console.error("[ERROR] Dynamic import of pdf-parse failed:", err.message);
-    }
-  }
-
   console.log(`[DEBUG] Filename: ${originalName}`);
   console.log(`[DEBUG] Mimetype: ${mimetype}`);
   console.log(`[DEBUG] Parsing file type: ${extension}`);
@@ -53,9 +19,6 @@ const extractTextFromBuffer = async (buffer, originalName, mimetype) => {
 
   try {
     if (extension === ".pdf") {
-      if (typeof pdfParse !== "function") {
-        throw new Error("pdf-parse library is not correctly loaded as a function.");
-      }
       const data = await pdfParse(buffer);
       text = data.text || "";
       console.log("[DEBUG] pdf-parse finished");
