@@ -4,6 +4,9 @@ const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY,
 });
 
+// Use environment variable or fallback to a supported stable model
+const MODEL = process.env.GROQ_MODEL || "llama-3.1-8b-instant";
+
 /**
  * Generates a full text response using Groq.
  */
@@ -15,14 +18,14 @@ async function generateText(prompt) {
 
     const chatCompletion = await groq.chat.completions.create({
       messages: [{ role: "user", content: prompt }],
-      model: "llama3-8b-8192",
+      model: MODEL,
       temperature: 0.5,
       max_tokens: 1024,
     });
 
     return chatCompletion.choices[0]?.message?.content || "";
   } catch (err) {
-    console.error("Groq generateText error:", err.message);
+    console.error(`Groq generateText error (${MODEL}):`, err.message);
     return "AI service is currently unavailable. (Offline Fallback)";
   }
 }
@@ -38,7 +41,7 @@ async function streamText(prompt, onChunk, onEnd, onError) {
 
     const stream = await groq.chat.completions.create({
       messages: [{ role: "user", content: prompt }],
-      model: "llama3-8b-8192",
+      model: MODEL,
       stream: true,
       temperature: 0.7,
       max_tokens: 2048,
@@ -51,7 +54,7 @@ async function streamText(prompt, onChunk, onEnd, onError) {
 
     if (onEnd) onEnd();
   } catch (err) {
-    console.error("Groq streamText error:", err.message);
+    console.error(`Groq streamText error (${MODEL}):`, err.message);
     if (onError) {
       onError(err);
     } else {
