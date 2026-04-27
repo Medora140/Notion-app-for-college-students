@@ -1,6 +1,6 @@
 console.log("resumeAIController loaded");
 
-const axios = require("axios");
+const { generateText } = require("../services/ollamaService");
 
 const analyzeResumeAI = async (req, res) => {
   const { text, role } = req.body;
@@ -34,27 +34,17 @@ Resume:
 ${text}
 `;
 
-    const response = await axios.post(
-      process.env.OLLAMA_URL || "http://localhost:11434/api/generate",
-      {
-        model: "llama3.2",
-        prompt,
-        stream: false,
-      },
-      { timeout: 300000 }
-    );
-
-    let output = response.data.response;
+    const output = await generateText(prompt);
 
     // Clean possible markdown or text wrapping
-    output = output
+    const cleanedOutput = output
       .replace(/```json/g, "")
       .replace(/```/g, "")
       .trim();
 
     let parsed;
     try {
-      parsed = JSON.parse(output);
+      parsed = JSON.parse(cleanedOutput);
     } catch (err) {
       console.log("JSON parse failed. Raw output:", output);
 

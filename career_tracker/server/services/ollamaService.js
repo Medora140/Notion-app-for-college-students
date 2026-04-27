@@ -1,79 +1,73 @@
-const axios = require("axios");
+const Groq = require("groq-sdk");
 
+const groq = new Groq({
+  apiKey: process.env.GROQ_API_KEY,
+});
+
+/**
+ * Generates a full text response using Groq.
+ * @param {string} prompt 
+ * @returns {Promise<string>}
+ */
 async function generateText(prompt) {
   try {
-    console.log("Ollama service called (generateText)");
-    const response = await axios.post(
-      process.env.OLLAMA_URL || "http://127.0.0.1:11434/api/generate",
-      {
-        model: "llama3.2",
-        prompt: prompt,
-        stream: false,
-        options: {
-          num_predict: 300,
-          temperature: 0.5,
-          num_ctx: 1024,
-          num_thread: 4
-        }
-      },
-      { timeout: 60000 }
-    );
-    console.log("Ollama finished generating");
-    return response.data.response;
+    console.log("Groq service called (generateText)");
+    const chatCompletion = await groq.chat.completions.create({
+      messages: [
+        {
+          role: "user",
+          content: prompt,
+        },
+      ],
+      model: "llama3-8b-8192",
+      temperature: 0.5,
+      max_tokens: 1024,
+    });
+
+    console.log("Groq finished generating");
+    return chatCompletion.choices[0]?.message?.content || "";
   } catch (err) {
-    console.error("Ollama error:", err.response?.data || err.message);
-    throw err;
+    console.error("Groq generateText error:", err.message);
+    // Return a fallback message so the frontend doesn't crash
+    return "The AI service is temporarily unavailable. Please try again later.";
   }
 }
 
+/**
+ * Streams a text response using Groq.
+ * @param {string} prompt 
+ * @param {function} onChunk 
+ * @param {function} onEnd 
+ * @param {function} onError 
+ */
 async function streamText(prompt, onChunk, onEnd, onError) {
   try {
-    console.log("Ollama service called (streamText)");
-    const response = await axios({
-      method: "post",
-      url: process.env.OLLAMA_URL || "http://127.0.0.1:11434/api/generate",
-      data: {
-        model: "llama3.2",
-        prompt: prompt,
-        stream: true,
-        options: {
-          num_predict: 500,
-          temperature: 0.7,
-          num_ctx: 2048,
-        }
-      },
-      responseType: "stream",
-      timeout: 120000,
+    console.log("Groq service called (streamText)");
+    const stream = await groq.chat.completions.create({
+      messages: [
+        {
+          role: "user",
+          content: prompt,
+        },
+      ],
+      model: "llama3-8b-8192",
+      stream: true,
+      temperature: 0.7,
+      max_tokens: 2048,
     });
 
-    response.data.on("data", (chunk) => {
-      const chunkStr = chunk.toString();
-      const lines = chunkStr.split("\n");
-      
-      lines.forEach((line) => {
-        if (!line.trim()) return;
-        try {
-          const parsed = JSON.parse(line);
-          if (parsed.response) {
-            onChunk(parsed.response);
-          }
-          if (parsed.done) {
-            onEnd && onEnd();
-          }
-        } catch (e) {
-          // Sometimes chunks are split across JSON lines, so we ignore parse errors
-        }
-      });
-    });
+    for await (const chunk of stream) {
+      const content = chunk.choices[0]?.delta?.content || "";
+      if (content) {
+        onChunk(content);
+      }
+    }
 
-    response.data.on("error", (err) => {
-      console.error("Axios stream error:", err.message);
-      onError && onError(err);
-    });
-
+    if (onEnd) onEnd();
+    console.log("Groq stream finished");
   } catch (err) {
-    console.error("StreamText request failed:", err.message);
-    onError && onError(err);
+    console.error("Groq streamText error:", err.message);
+    if (onError) onError(err);
   }
 }
 
