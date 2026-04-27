@@ -5,6 +5,7 @@ import {
   deleteResume,
 } from "../services/resumeService";
 import Avatar from "../components/Avatar";
+import toast, { Toaster } from "react-hot-toast";
 
 const BACKEND_URL = (import.meta.env.VITE_API_URL || "https://notion-app-for-college-students.onrender.com").replace(/\/$/, "");
 
@@ -268,9 +269,16 @@ const [loadingProjects, setLoadingProjects] = useState(false);
     e.preventDefault();
     if (!file) return;
 
-    await uploadResume(file);
-    setFile(null);
-    loadResumes();
+    try {
+      await uploadResume(file);
+      toast.success("Resume uploaded successfully!");
+      setFile(null);
+      e.target.reset(); // Clear the input field UI
+      loadResumes();
+    } catch (err) {
+      console.error("Upload error:", err);
+      toast.error("Failed to upload resume.");
+    }
   };
 
   const handleDelete = async (id) => {
@@ -281,6 +289,7 @@ const [loadingProjects, setLoadingProjects] = useState(false);
   // ================= UI =================
   return (
     <div className="dashboard">
+      <Toaster position="top-center" reverseOrder={false} />
       <h2>Resume Manager</h2>
 
       {/* Upload */}
