@@ -4,6 +4,8 @@ const fs = require("fs");
 const pdfParse = require("pdf-parse");
 const mammoth = require("mammoth");
 
+console.log("[DEBUG] pdf-parse type:", typeof pdfParse); // Expected: function
+
 /**
  * Extracts text from various file types using buffers.
  * Hardened for production with fallback for empty/short text.
