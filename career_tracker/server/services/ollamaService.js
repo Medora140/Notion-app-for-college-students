@@ -4,7 +4,7 @@ async function generateText(prompt) {
   try {
     console.log("Ollama service called (generateText)");
     const response = await axios.post(
-      "http://127.0.0.1:11434/api/generate",
+      process.env.OLLAMA_URL || "http://127.0.0.1:11434/api/generate",
       {
         model: "llama3.2",
         prompt: prompt,
@@ -31,7 +31,7 @@ async function streamText(prompt, onChunk, onEnd, onError) {
     console.log("Ollama service called (streamText)");
     const response = await axios({
       method: "post",
-      url: "http://127.0.0.1:11434/api/generate",
+      url: process.env.OLLAMA_URL || "http://127.0.0.1:11434/api/generate",
       data: {
         model: "llama3.2",
         prompt: prompt,

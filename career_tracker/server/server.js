@@ -21,7 +21,16 @@ const chatAIRoutes = require("./routes/chatAIRoutes");
 const autoProjectsRoutes = require("./routes/autoProjectsRoutes");
 
 // Middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "https://notion-app-for-colleg-git-3fc5da-medoragomes1402-3897s-projects.vercel.app",
+      "https://notion-app-for-college-students.onrender.com", // Also allow self for internal calls if any
+      "http://localhost:5173", // Local development
+    ],
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 

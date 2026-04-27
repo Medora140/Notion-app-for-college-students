@@ -35,7 +35,7 @@ ${text}
 `;
 
     const response = await axios.post(
-      "http://localhost:11434/api/generate",
+      process.env.OLLAMA_URL || "http://localhost:11434/api/generate",
       {
         model: "llama3.2",
         prompt,

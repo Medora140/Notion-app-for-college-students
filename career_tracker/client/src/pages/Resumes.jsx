@@ -6,6 +6,8 @@ import {
 } from "../services/resumeService";
 import Avatar from "../components/Avatar";
 
+const BACKEND_URL = import.meta.env.VITE_API_URL || "https://notion-app-for-college-students.onrender.com";
+
 function Resumes() {
   const [resumes, setResumes] = useState([]);
   const [file, setFile] = useState(null);
@@ -55,7 +57,7 @@ const [loadingProjects, setLoadingProjects] = useState(false);
 
     try {
       console.log("Sending project request to backend...");
-      const res = await fetch("http://localhost:5000/api/ai/projects", {
+      const res = await fetch(`${BACKEND_URL}/api/ai/projects`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ role: projectRole }),
@@ -86,7 +88,7 @@ const [loadingProjects, setLoadingProjects] = useState(false);
     try {
       console.log("Sending request to backend...");
       const res = await fetch(
-        "http://localhost:5000/api/ai/analyze-ai",
+        `${BACKEND_URL}/api/ai/analyze-ai`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -156,7 +158,7 @@ const [loadingProjects, setLoadingProjects] = useState(false);
     setChatMessages((prev) => [...prev, { role: "ai", text: "" }]);
 
     try {
-      const res = await fetch("http://localhost:5000/api/ai/chat-stream", {
+      const res = await fetch(`${BACKEND_URL}/api/ai/chat-stream`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -193,14 +195,14 @@ const [loadingProjects, setLoadingProjects] = useState(false);
     if (!weakSentence) return;
 
     try {
-      const res = await fetch("http://localhost:5000/api/ai/rewrite", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          sentence: weakSentence,
-          role: "Software Developer",
-        }),
-      });
+      const res = await fetch(`${BACKEND_URL}/api/ai/rewrite`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        sentence: weakSentence,
+        role: "Software Developer",
+      }),
+    });
 
       const data = await res.json();
       setRewritten(data.result);
@@ -214,7 +216,7 @@ const [loadingProjects, setLoadingProjects] = useState(false);
     setTemplateTips(["Generating template..."]);
 
     try {
-      const res = await fetch("http://localhost:5000/api/ai/chat-stream", {
+      const res = await fetch(`${BACKEND_URL}/api/ai/chat-stream`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -234,7 +236,7 @@ const [loadingProjects, setLoadingProjects] = useState(false);
   const handleInterviewQuestions = async () => {
     setQuestions("Generating interview questions...");
     try {
-      const res = await fetch("http://localhost:5000/api/ai/interview-stream", {
+      const res = await fetch(`${BACKEND_URL}/api/ai/interview-stream`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -445,7 +447,7 @@ const [loadingProjects, setLoadingProjects] = useState(false);
           <div key={r._id} className="app-card">
             <strong>{r.originalName}</strong>
             <a
-              href={`http://localhost:5000/uploads/${r.filename}`}
+              href={`${BACKEND_URL}/uploads/${r.filename}`}
               target="_blank"
               rel="noreferrer"
             >
